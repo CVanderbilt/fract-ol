@@ -2,54 +2,14 @@
 #include <math.h>
 #include <stdio.h>
 
-int is_in_mandelbrot(t_complex *c, int max)
+void	mandelbrot_derivative(t_complex *d, t_complex *prev)
 {
-	int i;
-	t_complex prev;
-
-	prev.r = 0;
-	prev.i = 0;
-	i = -1;
-	while (++i < max)
-	{
-		if (complex_mod_squared(&prev) >= 4)
-			return (i);
-		complex_pow2(&prev);
-		complex_add(&prev, c);
-		if (prev.r == 0 && prev.i == 0)
-			i = max - 1;
-	}
-	return (i);
+	complex_mul(d, prev);
+	complex_imul(d, 2);
 }
 
-//devuelve la distancia hasta el set
-double	is_in_mandelbrot_d(t_complex *c, int max)
+void	mandelbrot_formula(t_complex *prev, t_complex *c)
 {
-	int			i;
-	t_complex	prev;
-	t_complex	derivative;
-	double		mp;
-
-	prev.r = 0;
-	prev.i = 0;
-	derivative.i = 0;
-	derivative.r = 1;
-	i = -1;
-	while (++i < max)
-	{
-		if (complex_mod_squared(&prev) >= 4)
-		{
-			mp = complex_mod(&prev);
-			return (0.5 * mp * log(mp) / complex_mod(&derivative));
-		}
-		complex_mul(&derivative, &prev);
-		complex_imul(&derivative, 2);
-		complex_pow2(&prev);
-		complex_add(&prev, c);
-		derivative.r += 1;
-		//derivada *= 2 * prev
-		if (prev.r == 0 && prev.i == 0)
-			i = max - 1;
-	}
-	return (0);
+	complex_pow2(prev);
+	complex_add(prev, c);
 }

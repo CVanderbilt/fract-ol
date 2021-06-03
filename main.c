@@ -16,8 +16,13 @@
 //n=0 -> 0 + c = 0.4 + 0.3i
 //Z0 >= |c|*2^0 0.4 + 0.3i
 
-int is_in_mandelbrot(t_complex *c, int max);
-double	is_in_mandelbrot_d(t_complex *c, int max);
+void	mandelbrot_derivative(t_complex *d, t_complex *prev);
+void	mandelbrot_formula(t_complex *prev, t_complex *c);
+int is_in_set(t_complex *c, int max,
+			void (*ft_formula)(t_complex *, t_complex *));
+double	is_in_set_d(t_complex *c, int max, 
+			void (*ft_derivative)(t_complex *, t_complex *),
+			void (*ft_formula)(t_complex *, t_complex *));
 
 void paint_pixel(t_mlx *mlx, char *img, t_complex *c, int color)
 {
@@ -118,15 +123,10 @@ void draw(t_controler *c)
 			complex_init(&point, (double)columnas / (double)c->mlx->x * c->radius * 2 -  c->radius + c->center->r,
 			(double)filas / (double)c->mlx->y * c->radius * -2 + c->radius + c->center->i);
 			if (c->rep == DEM)
-				iter_data = is_in_mandelbrot_d(&point, c->iterations);
+				iter_data = is_in_set_d(&point, c->iterations, c->derivative, c->formula);
 			else
-				iter_data = is_in_mandelbrot(&point, c->iterations);
+				iter_data = is_in_set(&point, c->iterations, c->formula);
 			complex_init(&aux, columnas, filas);
-			/*if (m == (int)c->iterations)
-				color_d = 0;
-			else
-				color_d = c->color[c->iterations % 50];*/
-			//paint_pixel(c->mlx, c->mlx->screen_data, &aux, mlx_get_color_value(c->mlx, color_d));
 			paint_pixel(c->mlx, c->mlx->screen_data, &aux, get_color(c, &point, iter_data));
 			columnas++;
 		}
@@ -206,10 +206,6 @@ int		ft_loop_hook(void *params)
 	c = (t_controler *)params;
 	ft_move(c);
 	draw(c);
-	//getchar();
-	//printf("-----------------------------------------\n");
-	//printf("-----------------------------------------\n");
-	//printf("-----------------------------------------\n");
 	c->check = 1;
 	return (0);
 }
@@ -260,17 +256,14 @@ int main()
 	controler.zoom_amount = 0;
 	controler.iterations = 50;
 
-	//color inicial -- color final
-	//255 -- 255255255
-	int rmin = 0;
-	int gmin = 0;
-	int bmin = 255;
+	int rmin = 100;
+	int gmin = 100;
+	int bmin = 0;
 	int rmax = 255;
-	int gmax = 255;
+	int gmax = 100;
 	int bmax = 255;
 	for (int i = 0; i < 50; i++)
 	{
-		//controler.color[i] = mlx_get_color_value(controler.mlx, 255000000 + 5 * i * 1000 + 5 + i);
 		int ra = ((rmax - rmin) / 50 * i + rmin);
 		int ga = ((gmax - gmin) / 50 * i + gmin);
 		int ba = (bmax - bmin) / 50 * i + bmin;
@@ -283,10 +276,12 @@ int main()
 	}
 	controler.rep = ESCAPE;
 //	controler.rep = PSY;
-	controler.rep = DEM;
+//	controler.rep = DEM;
 //	controler.rep = IN_OR_OUT;
 	controler.check = 0;
 	controler.prev_max_distance = 0.6;
+	controler.derivative = mandelbrot_derivative;
+	controler.formula = mandelbrot_formula;
 	//controler.rep = GRA;
 	ft_loop(&controler);
 }

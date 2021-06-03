@@ -10,7 +10,7 @@ LDFLAGS=-L.
 
 LDLIBS=-lmlx -framework OpenGL -framework AppKit
 
-SRC=main.c mandelbrot.c complex.c
+SRC=main.c mandelbrot.c complex.c set.c
 
 OBJ=$(SRC:.c=.o)
 

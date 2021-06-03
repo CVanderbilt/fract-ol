@@ -89,6 +89,9 @@ typedef struct	s_controler
 	double limit_radius;
 	int check;
 	double prev_max_distance;
+
+	void (*derivative)(t_complex *, t_complex *);
+	void (*formula)(t_complex *, t_complex *);
 }	t_controler;
 
 void		complex_pow2(t_complex *t);
