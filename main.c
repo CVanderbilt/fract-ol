@@ -1,5 +1,5 @@
 #include "fractol.h"
-#include <mlx.h>
+#include "minilibX/mlx.h"
 #include <stdio.h>
 
 #define WHITE 16777215

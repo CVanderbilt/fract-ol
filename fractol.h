@@ -71,6 +71,7 @@ typedef struct	s_controler
 void		complex_pow2(t_complex *t);
 void		complex_add(t_complex *d, t_complex *aux);
 double		complex_mod(t_complex *c);
+double		complex_mod_squared(t_complex *c);
 t_complex	*complex_init(t_complex *c, double r, double i);
 
 

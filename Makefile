@@ -10,7 +10,7 @@ LDFLAGS=-L.
 
 LDLIBS=-lmlx -framework OpenGL -framework AppKit
 
-SRC=main.c mandelbrot.c
+SRC=main.c mandelbrot.c complex.c
 
 OBJ=$(SRC:.c=.o)
 
@@ -24,7 +24,7 @@ all:
 easy:
 	gcc -g -fsanitize=address -lmlx -framework OpenGL -framework AppKit $(SRC)
 e:
-	gcc -lmlx -framework OpenGL -framework AppKit $(SRC)
+	$(CC) $(CFLAGS) $(SRC)
 
 clean:
 	$(RM) $(COBJ) $(SOBJ)
