@@ -33,3 +33,19 @@ double complex_mod_squared(t_complex *c)
 {
 	return ((c->r * c->r + c->i * c->i));
 }
+
+void	complex_mul(t_complex *c, t_complex *m)
+{
+	t_complex r;
+
+	r.r = c->r * m->r - c->i * m->i;
+	r.i = c->r * m->i + c->i * m->r;
+	c->r = r.r;
+	c->i = r.i;
+}
+
+void	complex_imul(t_complex *c, double m)
+{
+	c->r *= m;
+	c->i *= m;
+}
