@@ -44,6 +44,9 @@ OBJECTS	= $(addprefix $(OBJECTS_DIRECTORY), $(OBJECTS_LIST))
 
 all: $(NAME)
 
+norme:
+	norminette includes sources
+
 $(NAME): $(MINILIBX) $(OBJECTS_DIRECTORY) $(OBJECTS)
 	$(CC) $(FLAGS) $(LIBRARIES) $(INCLUDES) $(OBJECTS) -o $(NAME)
 
