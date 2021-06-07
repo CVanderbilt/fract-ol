@@ -1,38 +1,70 @@
-NAME=fractol
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: vbrazhni <marvin@42.fr>                    +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2018/07/05 13:39:23 by vbrazhni          #+#    #+#              #
+#    Updated: 2019/07/20 17:59:18 by vbrazhni         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
 
-CC=gcc
+NAME = fractol
 
-CFLAGS=-Wall -Wextra -Werror -framework OpenGL -framework AppKit minilibX/libmlx.a
+CC = gcc
+FLAGS = -Wall -Werror -Wextra -O3
+LIBRARIES = -lmlx -lm -lft\
+	-L$(MINILIBX_DIRECTORY)\
+	-framework OpenGL -framework AppKit
+INCLUDES = -I$(HEADERS_DIRECTORY) -I$(MINILIBX_HEADERS)
 
-RM=rm -f
+MINILIBX = $(MINILIBX_DIRECTORY)libmlx.a
+MINILIBX_DIRECTORY = ./minilibX/
+MINILIBX_HEADERS = $(MINILIBX_DIRECTORY)
 
-LDFLAGS=-L.
+HEADERS_LIST = fractol.h utils.h \
+				bship.h julia.h mandelbrot.h
 
-LDLIBS=-lmlx -framework OpenGL -framework AppKit
+HEADERS_DIRECTORY = ./includes/
+HEADERS = $(addprefix $(HEADERS_DIRECTORY), $(HEADERS_LIST))
 
-SRC=main.c mandelbrot.c complex.c set.c
+SOURCES_DIRECTORY = ./sources/
+SOURCES_LIST = main.c painter.c utils.c \
+				mandelbrot.c julia.c bship.c \
+				complex.c init.c hooks.c
 
-OBJ=$(SRC:.c=.o)
+SOURCES = $(addprefix $(SOURCES_DIRECTORY), $(SOURCES_LIST))
+
+OBJECTS_DIRECTORY = objects/
+OBJECTS_LIST = $(patsubst %.c, %.o, $(SOURCES_LIST))
+OBJECTS	= $(addprefix $(OBJECTS_DIRECTORY), $(OBJECTS_LIST))
+
+.PHONY: all clean fclean re
+
+all: $(NAME)
+
+$(NAME): $(MINILIBX) $(OBJECTS_DIRECTORY)
+	@$(CC) $(FLAGS) $(LIBRARIES) $(INCLUDES) $(OBJECTS) -o $(NAME)
 
 
-$(NAME):
-	$(CC) $(CFLAGS) -c $(SRC)
-	$(CC) $(CFLAGS) -c $(OBJ)
+$(OBJECTS_DIRECTORY):
+	@mkdir -p $(OBJECTS_DIRECTORY)
 
-all:
-	gcc -g -fsanitize=address -lmlx -framework OpenGL -framework AppKit $(SRC)
-easy:
-	gcc -g -fsanitize=address -lmlx -framework OpenGL -framework AppKit $(SRC)
-e:
-	$(CC) $(CFLAGS) $(SRC)
+$(OBJECTS_DIRECTORY)%.o : $(SOURCES_DIRECTORY)%.c $(HEADERS)
+	@$(CC) $(FLAGS) -c $(INCLUDES) $< -o $@
+
+$(MINILIBX):
+	@$(MAKE) -sC $(MINILIBX_DIRECTORY)
 
 clean:
-	$(RM) $(COBJ) $(SOBJ)
+	@$(MAKE) -sC $(MINILIBX_DIRECTORY) clean
+	@rm -rf $(OBJECTS_DIRECTORY)
 
 fclean: clean
-	$(RM) -rf $(SERVER) $(SERVER).dSYM
-	$(RM) -rf $(CLIENT) $(CLIENT).dSYM
+	@rm -f $(MINILIBX)
+	@rm -f $(NAME)
 
-re: fclean all
-
-.PHONY: clean fclean all bonus
+re:
+	@$(MAKE) fclean
+	@$(MAKE) all
