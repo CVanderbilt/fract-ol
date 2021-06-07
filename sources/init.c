@@ -1,5 +1,5 @@
 #include "fractol.h"
-#include "minilibX/mlx.h"
+#include "mlx.h"
 #include <stdio.h>
 #include <unistd.h>
 #include <math.h>
@@ -11,9 +11,9 @@
 
 void	init_mlx(t_mlx *mlx, unsigned int size)
 {
-	int line_size;
-	int bpp;
-	int endian;
+	int	line_size;
+	int	bpp;
+	int	endian;
 
 	mlx->ptr = mlx_init();
 	mlx->x = size;
@@ -23,14 +23,15 @@ void	init_mlx(t_mlx *mlx, unsigned int size)
 	mlx->screen = mlx_new_image (mlx->ptr, mlx->x, mlx->y);
 	bpp = 4;
 	line_size = mlx->x;
-	mlx->screen_data = mlx_get_data_addr (mlx->screen, &bpp, &line_size, &endian);
+	mlx->screen_data = mlx_get_data_addr (
+			mlx->screen, &bpp, &line_size, &endian);
 }
 
 void	init_colors(t_controler *controler, int *cmin, int *cmax)
 {
-	int a[3];
-	int rgb;
-	int index;
+	int	a[3];
+	int	rgb;
+	int	index;
 
 	index = 0;
 	while (index < 50)

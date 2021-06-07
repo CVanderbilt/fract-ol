@@ -13,10 +13,10 @@ void	mandelbrot_formula(t_complex *prev, t_complex *c)
 	complex_add(prev, c);
 }
 
-int is_in_mandelbrot(t_complex *c, int max)
+int	is_in_mandelbrot(t_complex *c, int max)
 {
-	int i;
-	t_complex prev;
+	int			i;
+	t_complex	prev;
 
 	prev.r = 0;
 	prev.i = 0;
@@ -25,7 +25,6 @@ int is_in_mandelbrot(t_complex *c, int max)
 	{
 		if (complex_mod_squared(&prev) >= 4)
 			return (i);
-		//ft_formula(&prev, c);
 		mandelbrot_formula(&prev, c);
 		if (prev.r == 0 && prev.i == 0)
 			return (max);

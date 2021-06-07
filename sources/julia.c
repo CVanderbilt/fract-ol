@@ -13,10 +13,10 @@ void	julia_formula(t_complex *prev, t_complex *c)
 	complex_add(prev, c);
 }
 
-int is_in_julia(t_complex *prev, int max)
+int	is_in_julia(t_complex *prev, int max)
 {
-	int i;
-	t_complex c;
+	int			i;
+	t_complex	c;
 
 	complex_init(&c, 0.285, 0.01);
 	i = -1;

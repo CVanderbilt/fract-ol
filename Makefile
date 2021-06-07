@@ -14,7 +14,7 @@ NAME = fractol
 
 CC = gcc
 FLAGS = -Wall -Werror -Wextra -O3
-LIBRARIES = -lmlx -lm -lft\
+LIBRARIES = -lmlx -lm \
 	-L$(MINILIBX_DIRECTORY)\
 	-framework OpenGL -framework AppKit
 INCLUDES = -I$(HEADERS_DIRECTORY) -I$(MINILIBX_HEADERS)
@@ -30,9 +30,9 @@ HEADERS_DIRECTORY = ./includes/
 HEADERS = $(addprefix $(HEADERS_DIRECTORY), $(HEADERS_LIST))
 
 SOURCES_DIRECTORY = ./sources/
-SOURCES_LIST = main.c painter.c utils.c \
+SOURCES_LIST = main.c painter.c utils.c motion.c \
 				mandelbrot.c julia.c bship.c \
-				complex.c init.c hooks.c
+				complex1.c complex2.c init.c hooks.c
 
 SOURCES = $(addprefix $(SOURCES_DIRECTORY), $(SOURCES_LIST))
 
@@ -44,9 +44,13 @@ OBJECTS	= $(addprefix $(OBJECTS_DIRECTORY), $(OBJECTS_LIST))
 
 all: $(NAME)
 
-$(NAME): $(MINILIBX) $(OBJECTS_DIRECTORY)
-	@$(CC) $(FLAGS) $(LIBRARIES) $(INCLUDES) $(OBJECTS) -o $(NAME)
+$(NAME): $(MINILIBX) $(OBJECTS_DIRECTORY) $(OBJECTS)
+	$(CC) $(FLAGS) $(LIBRARIES) $(INCLUDES) $(OBJECTS) -o $(NAME)
 
+
+$(OBJECTS):
+	@$(CC) -c $(FLAGS) $(INCLUDES) $(SOURCES)
+	mv $(OBJECTS_LIST) $(OBJECTS_DIRECTORY)
 
 $(OBJECTS_DIRECTORY):
 	@mkdir -p $(OBJECTS_DIRECTORY)

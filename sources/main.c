@@ -1,5 +1,6 @@
 #include "fractol.h"
-#include "minilibX/mlx.h"
+//#include "minilibX/mlx.h"
+#include "mlx.h"
 #include <stdio.h>
 #include <unistd.h>
 #include <math.h>
@@ -9,40 +10,17 @@
 #include "bship.h"
 #include "utils.h"
 
-void	move_towards(t_controler *c, t_complex *point)
-{
-	double	delta;
-	double	hdiff;
-	double	vdiff;
-	t_complex mov;
-
-	complex_init(&mov, 0, 0);
-	printf("moviendo a %f, %f, desde %f, %f\n", point->r, point->i, c->center.r, c->center.i);
-	hdiff = point->r - c->center.r;
-	vdiff = point->i - c->center.i;
-	delta = c->radius / 10;
-	if (hdiff > delta)
-		hdiff = delta;
-	else if (hdiff < -delta)
-		hdiff = -delta;
-	if (vdiff > delta)
-		vdiff = delta;
-	else if (vdiff < -delta)
-		vdiff = -delta;
-	c->center.r += hdiff;
-	c->center.i += vdiff;
-	printf("hdiff %f, vdiff %f\n", hdiff, vdiff);
-}
-
 void	pixel_to_coo(t_controler *c, t_complex *point, int x, int y)
 {
-	complex_init(point, (double)x / (double)c->mlx->x * c->radius * 2 -  c->radius + c->center.r,
-			(double)y / (double)c->mlx->y * c->radius * -2 + c->radius + c->center.i);
+	complex_init(point,
+		(double)x / (double)c->mlx->x * c->radius * 2 - c->radius + c->center.r,
+		(double)y / (double)c->mlx->y * c->radius * -2
+		+ c->radius + c->center.i);
 }
 
 int	ft_free_and_exit(void *param)
 {
-	t_controler *c;
+	t_controler	*c;
 
 	c = (t_controler *)param;
 	c->base_color = 0;
@@ -61,22 +39,22 @@ void	ft_help(t_controler *c)
 	ft_free_and_exit(c);
 }
 
-int main(int argc, char *argv[])
+int	main(int argc, char *argv[])
 {
-	t_mlx mlx;
-	t_controler controler;
-	int min[3];
-	int max[3];
-	
+	t_mlx		mlx;
+	t_controler	controler;
+	int			min[3];
+	int			max[3];
+
 	min[0] = 0;
 	min[1] = 0;
 	min[2] = 0;
 	max[0] = 255;
 	max[1] = 100;
 	max[2] = 255;
-	init_mlx(&mlx, 500);
 	init_controler(&controler, &mlx, min, max);
 	if (!manage_args(argc, argv, &controler))
 		ft_help(&controler);
+	init_mlx(&mlx, 500);
 	ft_loop(&controler);
 }

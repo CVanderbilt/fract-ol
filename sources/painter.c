@@ -1,5 +1,6 @@
 #include "fractol.h"
-#include "minilibX/mlx.h"
+//#include "minilibX/mlx.h"
+#include "mlx.h"
 #include <stdio.h>
 #include <unistd.h>
 #include <math.h>
@@ -9,17 +10,20 @@
 
 #define WHITE 16777215
 
-void paint_pixel(t_mlx *mlx, char *img, t_complex *c, int color)
+void	paint_pixel(t_mlx *mlx, char *img, t_complex *c, int color)
 {
-	int *aux = (int*)img;
+	int	*aux;
+
+	aux = (int *)img;
 	aux[(int)c->r + (int)c->i * mlx->x] = color;
 }
 
 int	get_color_dem(t_controler *c, double iter_data)
 {
-	double max_distance = c->radius / c->mlx->x;
-	int index;
+	double	max_distance;
+	int		index;
 
+	max_distance = c->radius / c->mlx->x;
 	if (iter_data >= max_distance)
 		return (c->color[49]);
 	if (iter_data <= 0)
@@ -53,7 +57,7 @@ int	get_color(t_controler *c, double iter_data)
 		return (get_color_dem(c, iter_data));
 }
 
-void draw(t_controler *c)
+void	draw(t_controler *c)
 {
 	int			filas;
 	int			columnas;
@@ -61,24 +65,22 @@ void draw(t_controler *c)
 	t_complex	aux;
 	double		iter_data;
 
-	int kk = 0;
-	filas = 0;
-	while (filas < c->mlx->y)
+	filas = -1;
+	while (++filas < c->mlx->y)
 	{
 		columnas = 0;
 		while (columnas < c->mlx->x)
 		{
 			pixel_to_coo(c, &point, columnas, filas);
-			kk = 0;
 			if (c->rep == DEM)
 				iter_data = c->is_in_set_d(&point, c->iterations);
 			else
 				iter_data = c->is_in_set(&point, c->iterations);
 			complex_init(&aux, columnas, filas);
-			paint_pixel(c->mlx, c->mlx->screen_data, &aux, get_color(c, iter_data));
+			paint_pixel(c->mlx, c->mlx->screen_data, &aux,
+				get_color(c, iter_data));
 			columnas++;
 		}
-		filas++;
 	}
 	mlx_put_image_to_window (c->mlx->ptr, c->mlx->window, c->mlx->screen, 0, 0);
 }
