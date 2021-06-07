@@ -49,3 +49,17 @@ void	complex_imul(t_complex *c, double m)
 	c->r *= m;
 	c->i *= m;
 }
+
+void	complex_abs(t_complex *c)
+{
+	if (c->i < 0)
+		c->i *= -1;
+	if (c->r < 0)
+		c->r *= -1;
+}
+
+void	complex_sub(t_complex *d, t_complex *aux)
+{
+	d->r -= aux->r;
+	d->i -= aux->i;
+}

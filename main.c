@@ -4,284 +4,79 @@
 #include <unistd.h>
 #include <math.h>
 #include <stdlib.h>
+#include "mandelbrot.h"
+#include "julia.h"
+#include "bship.h"
+#include "utils.h"
 
-#define WHITE 16777215
-#define RE_START -2
-#define RE_END 1
-#define IM_START -1
-#define IM_END 1
-
-//pertenece a mandelbrot si Zn >= s^n
-//c = 0.4 + 0.3i
-//n=0 -> 0 + c = 0.4 + 0.3i
-//Z0 >= |c|*2^0 0.4 + 0.3i
-
-void	mandelbrot_derivative(t_complex *d, t_complex *prev);
-void	mandelbrot_formula(t_complex *prev, t_complex *c);
-int is_in_set(t_complex *c, int max,
-			void (*ft_formula)(t_complex *, t_complex *));
-double	is_in_set_d(t_complex *c, int max, 
-			void (*ft_derivative)(t_complex *, t_complex *),
-			void (*ft_formula)(t_complex *, t_complex *));
-
-void paint_pixel(t_mlx *mlx, char *img, t_complex *c, int color)
+void	move_towards(t_controler *c, t_complex *point)
 {
-	//printf("pinta (%d, %d) = %d\n", (int)c->r, (int)c->i, (int)c->r + (int)c->i * mlx->x);
-	int *aux = (int*)img;
-	aux[(int)c->r + (int)c->i * mlx->x] = color;
-	//printf("painting %d\n", color);
-}
+	double	delta;
+	double	hdiff;
+	double	vdiff;
+	t_complex mov;
 
-int	get_color(t_controler *c, t_complex *point, double iter_data)
-{
-	if (point)
-		point->i = point->i;
-	if (c->rep == ESCAPE)
-		return (c->color[(int)trunc(50 * iter_data / c->iterations)]);
-	else if (c->rep == IN_OR_OUT)
-	{
-		if ((int)iter_data == (int)c->iterations)
-			return (WHITE);
-		return (BLACK);
-	}
-	else if (c->rep == PSY)
-	{
-		int color = 255 - ((int)iter_data * 255 / c->iterations);
-		int color_d = color;
-		color_d = color_d * 1000 + color;
-		color_d = color_d * 1000 + color;
-		return (mlx_get_color_value(c->mlx, color_d));
-	}
-	else //if (c->rep == DEM)
-	{
-		//regla de tres con max distance arbitraria
-		//distancia relativa a lo que se ve en pantalla (1 / 10 de lo que hay en pantalla)
-		double max_distance = c->radius / c->mlx->x;
-		//iter_data += max_distance / 50;
-		int index;
-		//if (c->check)
-		//	printf("r: %f, distancia %f, indice %d.", max_distance, iter_data, (int)trunc(iter_data * 50 / max_distance));
-		if (iter_data >= max_distance)
-		{
-			//printf(" ret1 %d.", c->color[49]);
-			return (c->color[49]);
-		}
-		if (iter_data <= 0)
-		{
-			//printf(" ret2 %d.", c->color[0]);
-			return (c->color[0]);
-		}
-		/*if (iter_data <= 0)
-			return (c->color[0]);*/
-		//if (iter_data > 0.5)
-			//printf("distancia %f, %d\n", iter_data, (int)trunc(iter_data * 50 / max_distance));
-		index = (int)trunc(iter_data * 50 / max_distance);
-		//if (iter_data > 1)
-		//	printf("i: %d\n", index);
-		//return ((int)trunc(iter_data * 50 / 5));
-		//printf(" ret3 %d.", c->color[index]);
-		return (c->color[(int)trunc(iter_data * 50 / max_distance)]);
-	}
-}
-
-void ft_gra(t_controler *c)
-{
-	t_complex aux;
-
-	for (int i = 0; i < c->mlx->x; i++)
-	{
-		for (int j = 0; j < c->mlx->y; j++)
-		{
-			complex_init(&aux, i, j);
-			paint_pixel(c->mlx, c->mlx->screen_data, &aux, c->color[i / (c->mlx->x / 50)]);
-			//paint_pixel(c->mlx, c->mlx->screen_data, &aux, c->color[i % 50]);
-			//printf("pinta (%d)-> %d\n", i % 50, c->color[i % 50]);
-		}
-	}
-}
-
-void draw(t_controler *c)
-{
-	int			filas;
-	int			columnas;
-	t_complex	point;
-	t_complex	aux;
-	double		iter_data;
-
-	if (c->rep == GRA)
-	{
-		ft_gra(c);
-	}
-	else
-{
-	filas = 0;
-	while (filas < c->mlx->y)
-	{
-		columnas = 0;
-		while (columnas < c->mlx->x)
-		{
-			complex_init(&point, (double)columnas / (double)c->mlx->x * c->radius * 2 -  c->radius + c->center->r,
-			(double)filas / (double)c->mlx->y * c->radius * -2 + c->radius + c->center->i);
-			if (c->rep == DEM)
-				iter_data = is_in_set_d(&point, c->iterations, c->derivative, c->formula);
-			else
-				iter_data = is_in_set(&point, c->iterations, c->formula);
-			complex_init(&aux, columnas, filas);
-			paint_pixel(c->mlx, c->mlx->screen_data, &aux, get_color(c, &point, iter_data));
-			columnas++;
-		}
-		filas++;
-	}
-}
-	mlx_put_image_to_window (c->mlx->ptr, c->mlx->window, c->mlx->screen, 0, 0);
-}
-
-void	ft_move(t_controler *c)
-{
-	double delta_v;
-	double delta_h;
-	double delta;
-
+	complex_init(&mov, 0, 0);
+	printf("moviendo a %f, %f, desde %f, %f\n", point->r, point->i, c->center.r, c->center.i);
+	hdiff = point->r - c->center.r;
+	vdiff = point->i - c->center.i;
 	delta = c->radius / 10;
-	delta_v = (c->u - c->d) * delta;
-	delta_h = (c->r - c->l) * delta;
-	c->center->r += delta_h;
-	c->center->i += delta_v;
-	if (c->zooming)
-	{
-		c->zoom_amount++;
-		c->radius = c->radius - c->radius /10;
-	}
+	if (hdiff > delta)
+		hdiff = delta;
+	else if (hdiff < -delta)
+		hdiff = -delta;
+	if (vdiff > delta)
+		vdiff = delta;
+	else if (vdiff < -delta)
+		vdiff = -delta;
+	c->center.r += hdiff;
+	c->center.i += vdiff;
+	printf("hdiff %f, vdiff %f\n", hdiff, vdiff);
 }
 
-int		ft_key_release_hook(int keycode, void *params)
+void	pixel_to_coo(t_controler *c, t_complex *point, int x, int y)
 {
-	t_controler	*c;
-
-	c = (t_controler*)params;
-	if (keycode == KEY_FORWARD)
-		c->u = 0;
-	if (keycode == KEY_BACKWARD)
-		c->d = 0;
-	if (keycode == KEY_LEFT)
-		c->l = 0;
-	if (keycode == KEY_RIGHT)
-		c->r = 0;
-	if (keycode == KEY_S)
-		c->zooming = 0;
-	return (0);
+	complex_init(point, (double)x / (double)c->mlx->x * c->radius * 2 -  c->radius + c->center.r,
+			(double)y / (double)c->mlx->y * c->radius * -2 + c->radius + c->center.i);
 }
 
-int	ft_key_hook(int keycode, void *params)
-{
-	t_controler	*c;
-
-	c = (t_controler*)params;
-	if (keycode == KEY_FORWARD)
-		c->u = 1;
-	else if (keycode == KEY_BACKWARD)
-		c->d = 1;
-	else if (keycode == KEY_LEFT)
-		c->l = 1;
-	else if (keycode == KEY_RIGHT)
-		c->r = 1;
-	else if (keycode == KEY_S)
-		c->zooming = 1;
-	else if (keycode == KEY_I)
-	{
-		c->iterations += 10;	
-	//	printf("iterations %u\n")
-	}
-	else if (keycode == KEY_O && c->iterations > 50)
-		c->iterations -= 10;
-	else if (keycode == KEY_P)
-		printf("iterations: %d\n", c->iterations);
-	return (0);
-}
-
-int		ft_loop_hook(void *params)
+int	ft_free_and_exit(void *param)
 {
 	t_controler *c;
 
-	c = (t_controler *)params;
-	ft_move(c);
-	draw(c);
-	c->check = 1;
+	c = (t_controler *)param;
+	c->base_color = 0;
+	exit(0);
 	return (0);
 }
 
-void	ft_loop(t_controler *c)
+void	ft_help(t_controler *c)
 {
-	t_mlx *mlx;
-
-	mlx = c->mlx;
-	mlx_hook(mlx->window, 2, 1, ft_key_hook, c);
-	mlx_hook(mlx->window, 3, 0, ft_key_release_hook, c);
-	//mlx_hook(mlx->window, 17, 0, ft_free_and_exit, data);
-	mlx_loop_hook(mlx->ptr, ft_loop_hook, c);
-	mlx_loop(mlx->ptr);
+	write(1, "Wrong parameters\n", 17);
+	write(1, "./fract-ol [type] (render_method)\n", 34);
+	write(1, "types: M/m -> mandelbrot fractal, J/j", 37);
+	write(1, "-> julia fractal, B/b -> burning ship\n", 38);
+	write(1, "render methods: IOO(default), DEM(not av", 40);
+	write(1, "ailable for burning ship), PSY and ESC\n", 39);
+	ft_free_and_exit(c);
 }
 
-int main()
+int main(int argc, char *argv[])
 {
 	t_mlx mlx;
-	t_complex center;
 	t_controler controler;
-	int line_size;
-	int bpp;
-	int endian;
-
-	mlx.ptr = mlx_init();
-	mlx.x = 500;
-	mlx.y = 500;
-	mlx.window = mlx_new_window (mlx.ptr, mlx.x, mlx.y, "titulo");
-	if (!mlx.window)
-		printf("error\n");
-
-	endian = 1;
-	mlx.screen = mlx_new_image (mlx.ptr, mlx.x, mlx.y);
-	bpp = 4;
-	line_size = mlx.x;
-	mlx.screen_data = mlx_get_data_addr (mlx.screen, &bpp, &line_size, &endian);
-	complex_init(&center, 0, 0);
-	controler.mlx = &mlx;
-	controler.center = &center;
-	controler.radius = 1;
-
-	controler.u = 0;
-	controler.d = 0;
-	controler.l = 0;
-	controler.r = 0;
-	controler.zooming = 0;
-	controler.zoom_amount = 0;
-	controler.iterations = 50;
-
-	int rmin = 100;
-	int gmin = 100;
-	int bmin = 0;
-	int rmax = 255;
-	int gmax = 100;
-	int bmax = 255;
-	for (int i = 0; i < 50; i++)
-	{
-		int ra = ((rmax - rmin) / 50 * i + rmin);
-		int ga = ((gmax - gmin) / 50 * i + gmin);
-		int ba = (bmax - bmin) / 50 * i + bmin;
-		printf("rgb %d\n", ra + ga + ba);
-		int rgb = ra;
-		rgb = (rgb << 8) + ga;
-		rgb = (rgb << 8) + ba;
-		controler.color[i] = (rgb);
-		printf("color %d: %d\n", i, controler.color[i]);
-	}
-	controler.rep = ESCAPE;
-//	controler.rep = PSY;
-//	controler.rep = DEM;
-//	controler.rep = IN_OR_OUT;
-	controler.check = 0;
-	controler.prev_max_distance = 0.6;
-	controler.derivative = mandelbrot_derivative;
-	controler.formula = mandelbrot_formula;
-	//controler.rep = GRA;
+	int min[3];
+	int max[3];
+	
+	min[0] = 0;
+	min[1] = 0;
+	min[2] = 0;
+	max[0] = 255;
+	max[1] = 100;
+	max[2] = 255;
+	init_mlx(&mlx, 500);
+	init_controler(&controler, &mlx, min, max);
+	if (!manage_args(argc, argv, &controler))
+		ft_help(&controler);
 	ft_loop(&controler);
 }
