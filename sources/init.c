@@ -15,6 +15,8 @@ void	init_mlx(t_mlx *mlx, unsigned int size)
 	int	bpp;
 	int	endian;
 
+	mlx->cursor_x = 0;
+	mlx->cursor_y = 0;
 	mlx->ptr = mlx_init();
 	mlx->x = size;
 	mlx->y = size;
@@ -53,10 +55,16 @@ void	init_controler(t_controler *controler, t_mlx *m, int *cmin, int *cmax)
 	complex_init(&controler->center, 0, 0);
 	controler->mlx = m;
 	controler->radius = 1;
+	//controler->mh = 0;
+	//controler->mv = 0;
 	controler->u = 0;
 	controler->d = 0;
 	controler->l = 0;
 	controler->r = 0;
+	controler->mu = 0;
+	controler->md = 0;
+	controler->ml = 0;
+	controler->mr = 0;
 	controler->zooming = 0;
 	controler->zoom_amount = 0;
 	controler->iterations = 50;

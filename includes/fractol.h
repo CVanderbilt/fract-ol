@@ -60,6 +60,8 @@ typedef struct s_mlx
 	char		*title;
 	int			x;
 	int			y;
+	int			cursor_x;
+	int			cursor_y;
 }	t_mlx;
 
 typedef struct s_complex
@@ -77,6 +79,10 @@ typedef struct s_controler
 	int				d;
 	int				l;
 	int				r;
+	int				mu;
+	int				md;
+	int				ml;
+	int				mr;
 	int				zooming;
 	int				scrolling;
 	int				base_color;

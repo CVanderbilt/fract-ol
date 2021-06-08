@@ -1,5 +1,28 @@
 #include "fractol.h"
 
+double	get_delta(t_controler *c, int n, double delta)
+{
+	int	u;
+	int	d;
+	int	diff;
+
+	u = c->u;
+	d = c->d;
+	if (n == 1)
+	{
+		u = c->r;
+		d = c->l;
+	}
+	diff = u - d;
+	if (diff == 0)
+	{
+		diff = c->mu - c->md;
+		if (n == 1)
+			diff = c->mr - c->ml;
+	}
+	return (diff * delta);
+}
+
 void	ft_move(t_controler *c)
 {
 	double	delta_v;
@@ -7,8 +30,8 @@ void	ft_move(t_controler *c)
 	double	delta;
 
 	delta = c->radius / 10;
-	delta_v = (c->u - c->d) * delta;
-	delta_h = (c->r - c->l) * delta;
+	delta_v = get_delta(c, 0, delta);
+	delta_h = get_delta(c, 1, delta);
 	c->center.r += delta_h;
 	c->center.i += delta_v;
 	if (c->zooming || c->scrolling)
