@@ -32,8 +32,7 @@ void	ft_help(t_controler *c)
 {
 	write(1, "Wrong parameters\n", 17);
 	write(1, "./fract-ol [type] (render_method)\n", 34);
-	write(1, "types: M/m -> mandelbrot fractal, J/j", 37);
-	write(1, "-> julia fractal, B/b -> burning ship\n", 38);
+	write(1, "types: 'mandelbrot', 'julia', 'ship'\n", 37);
 	write(1, "render methods: IOO(default), DEM(not av", 40);
 	write(1, "ailable for burning ship), PSY and ESC\n", 39);
 	ft_free_and_exit(c);

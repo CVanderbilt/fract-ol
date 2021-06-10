@@ -55,8 +55,6 @@ void	init_controler(t_controler *controler, t_mlx *m, int *cmin, int *cmax)
 	complex_init(&controler->center, 0, 0);
 	controler->mlx = m;
 	controler->radius = 1;
-	//controler->mh = 0;
-	//controler->mv = 0;
 	controler->u = 0;
 	controler->d = 0;
 	controler->l = 0;
@@ -97,17 +95,17 @@ int	manage_args(int argc, char *argv[], t_controler *c)
 {
 	if (argc >= 2 && argc <= 3)
 	{
-		if (*argv[1] == 'M' || *argv[1] == 'm')
+		if (!ft_strcmp(argv[1], "mandelbrot"))
 		{
 			c->is_in_set = is_in_mandelbrot;
 			c->is_in_set_d = is_in_mandelbrot_d;
 		}
-		else if (*argv[1] == 'J' || *argv[1] == 'j')
+		else if (!ft_strcmp(argv[1], "julia"))
 		{
 			c->is_in_set = is_in_julia;
 			c->is_in_set_d = is_in_julia_d;
 		}
-		else if (*argv[1] == 'B' || *argv[1] == 'b')
+		else if (!ft_strcmp(argv[1], "ship"))
 			c->is_in_set = is_in_bship;
 		else
 			return (0);

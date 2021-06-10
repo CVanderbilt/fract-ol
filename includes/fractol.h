@@ -45,12 +45,6 @@ typedef enum e_rep
 	GRA
 }	t_rep;
 
-typedef enum e_bool
-{
-	false,
-	true
-}	t_bool;
-
 typedef struct s_mlx
 {
 	void		*ptr;
@@ -86,18 +80,12 @@ typedef struct s_controler
 	int				zooming;
 	int				scrolling;
 	int				base_color;
-	int				max_count;
 	int				zoom_amount;
 	unsigned int	iterations;
 	int				color[50];
 	t_rep			rep;
-	double			limit_radius;
-	int				check;
-	double			prev_max_distance;
 	int				(*is_in_set)(t_complex *, int);
 	double			(*is_in_set_d)(t_complex *, int);
-	void			(*derivative)(t_complex *, t_complex *);
-	void			(*formula)(t_complex *, t_complex *);
 }	t_controler;
 
 void		complex_pow2(t_complex *t);
