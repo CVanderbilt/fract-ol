@@ -75,7 +75,7 @@ int	manage_opts(int argc, char *argv[], t_controler *c)
 	{
 		if (!ft_strcmp(argv[2], "DEM"))
 		{
-			if (*argv[1] == 'b' || *argv[1] == 'B')
+			if (!c->is_in_set_d)
 				return (0);
 			c->rep = DEM;
 		}
@@ -106,7 +106,10 @@ int	manage_args(int argc, char *argv[], t_controler *c)
 			c->is_in_set_d = is_in_julia_d;
 		}
 		else if (!ft_strcmp(argv[1], "ship"))
+		{
 			c->is_in_set = is_in_bship;
+			c->is_in_set_d = 0;
+		}
 		else
 			return (0);
 		return (manage_opts(argc, argv, c));
