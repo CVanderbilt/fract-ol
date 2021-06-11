@@ -20,7 +20,8 @@ HEADERS = $(addprefix $(HEADERS_DIRECTORY), $(HEADERS_LIST))
 SOURCES_DIRECTORY = ./sources/
 SOURCES_LIST = main.c painter.c utils.c motion.c \
 				mandelbrot.c julia.c bship.c \
-				complex1.c complex2.c init.c hooks.c
+				complex1.c complex2.c init.c \
+				hooks1.c hooks2.c
 
 SOURCES = $(addprefix $(SOURCES_DIRECTORY), $(SOURCES_LIST))
 
