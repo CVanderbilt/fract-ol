@@ -93,7 +93,9 @@ int	manage_opts(int argc, char *argv[], t_controler *c)
 
 int	manage_args(int argc, char *argv[], t_controler *c)
 {
-	if (argc >= 2 && argc <= 3)
+	if (argc >= 3)
+		argc = 3;
+	if (argc >= 2)
 	{
 		if (!ft_strcmp(argv[1], "mandelbrot"))
 		{

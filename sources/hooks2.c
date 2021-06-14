@@ -7,12 +7,15 @@
 #include "mandelbrot.h"
 #include "julia.h"
 
-static void	reset_motin_vars(t_controler *c)
+static int	reset_motin_vars(t_controler *c, int x, int y)
 {
 	c->ml = 0;
 	c->mr = 0;
 	c->mu = 0;
 	c->md = 0;
+	if (x < 0 || y < 0 || x > c->mlx->x || y > c->mlx->y)
+		return (0);
+	return (1);
 }
 
 int	motion_notify(int x, int y, void *data)
@@ -21,7 +24,8 @@ int	motion_notify(int x, int y, void *data)
 
 	c = (t_controler *)data;
 	mlx_mouse_get_pos(c->mlx->window, &x, &y);
-	reset_motin_vars(c);
+	if (!reset_motin_vars(c, x, y))
+		return (1);
 	if (c->mlx->x / 5 > x)
 		c->ml = 1;
 	else if (c->mlx->x / 5 * 4 < x)
